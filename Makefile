@@ -19,16 +19,13 @@ CONFLICTS_INSTALL+=	thunderbird
 CONFLICTS_INSTALL+=	thunderbird-esr
 
 do-patch:
-#	@for file in `${FIND} foo -type f -name *.patch -exec ${ECHO} {} ';' 2>/dev/null`; do \
-#		${CP} $${file} ${WRKSRC}/comm/.hg/patches ; \
-#	done
-
-#	@for line in `$(CAT) ${WRKSRC}/comm/.hg/patches/series`; do \
-#		if [ -f ${WRKSRC}/comm/.hg/patches/$${line} ]; then \
-#		cd ${WRKSRC}/comm && \
-#		echo patch -p1 -N --ignore-whitespace -i ../patches/$${line}; \
-#		fi; \
-#	done
+#	WIP
+#      @for line in `$(CAT) ${WRKSRC}/comm/.hg/patches/series`; do \
+#              if [ -f ${WRKSRC}/comm/.hg/patches/$${line} ]; then \
+#              cd ${WRKSRC}/comm && \
+#              echo patch -p1 -N --ignore-whitespace -i ../patches/$${line}; \
+#              fi; \
+#      done
 
 pre-build:
 

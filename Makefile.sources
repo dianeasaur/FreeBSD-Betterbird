@@ -54,6 +54,13 @@ post-extract:
 		${WRKSRC}/.hg/patches/series-moz
 
 pre-patch:
+	@for dir in branding bugs features misc; do \
+		for file in \
+		`${FIND} ${WRKDIR}/thunderbird-patches-${DISTVERSION}${RELEASE_BB}/${RELEASE_M}/$${dir}/ \
+		-type f -name *.patch -exec ${ECHO} {} ';' 2>/dev/null`; do \
+			${CP} $${file} ${WRKSRC}/comm/.hg/patches/ ; \
+		done; \
+	done
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/f0dedf9da0fb \
 		${WRKSRC}/.hg/patches/1976637-fix-scroll-moz.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/eb32710132eb \
