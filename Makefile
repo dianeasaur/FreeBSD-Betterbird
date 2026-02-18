@@ -11,21 +11,35 @@ WWW=		https://www.betterbird.eu/
 DIST_SUBDIR=	${PORTNAME}
 WRKSRC=		${WRKDIR}/${PORTNAME}
 
-BUILD_DEPENDS=	mercurial>0:devel/mercurial@${PY_FLAVOR}
+BUILD_DEPENDS=
 
 LIB_DEPENDS=	
 
 CONFLICTS_INSTALL+=	thunderbird
 CONFLICTS_INSTALL+=	thunderbird-esr
 
-do-patch:
-#	WIP
-#      @for line in `$(CAT) ${WRKSRC}/comm/.hg/patches/series`; do \
-#              if [ -f ${WRKSRC}/comm/.hg/patches/$${line} ]; then \
-#              cd ${WRKSRC}/comm && \
-#              echo patch -p1 -N --ignore-whitespace -i ../patches/$${line}; \
-#              fi; \
-#      done
+                        #cd ${WRKSRC} && ${PATCH} -s -p1 -N -F 4 -i \
+                        #       ${WRKDIR}/mozilla-patch-staging/$${patch}; \
+
+patch:
+	@${ECHO_MSG} "===>   Applying mozilla patches"
+	@for patch in `${AWK} '/^#/ {next} {print $$1}' ${WRKDIR}/mozilla-patch-staging/series`; do \
+		if [ -f ${WRKDIR}/mozilla-patch-staging/$${patch} ]; then \
+			cd ${WRKSRC} && git apply --quiet --whitespace=warn \
+				${WRKDIR}/mozilla-patch-staging/$${patch}; \
+		else \
+			${ECHO_MSG} "===> ERROR: mozilla project patch $${patch} is missing"; \
+		fi; \
+	done
+	@${ECHO_MSG} "===>   Applying comm patches"
+	@for patch in `${AWK} '/^#/ {next} {print $$1}' ${WRKDIR}/comm-patch-staging/series`; do \
+		if [ -f ${WRKDIR}/comm-patch-staging/$${patch} ]; then \
+			cd ${WRKSRC} && git apply --quiet --whitespace=warn \
+				${WRKDIR}/comm-patch-staging/$${patch}; \
+		else \
+			${ECHO_MSG} "===> ERROR: comm project patch $${patch} is missing"; \
+		fi; \
+	done
 
 pre-build:
 

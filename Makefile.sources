@@ -42,144 +42,152 @@ DISTFILES+=	eb32710132eb:ccpatch 0e35d7cc243f:ccpatch \
 	db39e0bdfcee:ccpatch f0dedf9da0fb:mozpatch
 
 post-extract:
+	@${MKDIR} ${WRKDIR}/mozilla-patch-staging
+	@${MKDIR} ${WRKDIR}/comm-patch-staging
 	@${MV} ${WRKDIR}/mozilla-esr${RELEASE_M}-${MOZILLA_REV} \
 		${WRKSRC} 2>/dev/null || ${TRUE}
 	@${MV} ${WRKDIR}/comm-esr${RELEASE_M}-${COMM_REV} \
 		${WRKSRC}/comm 2>/dev/null || ${TRUE}
 	@${MKDIR} ${WRKSRC}/comm/mail/branding/${PORTNAME} || ${TRUE}
-	@${MKDIR} -p ${WRKSRC}/.hg/patches ${WRKSRC}/comm/.hg/patches
-	@${CP} ${WRKDIR}/thunderbird-patches-${DISTVERSION}${RELEASE_BB}/${RELEASE_M}/series \
-		${WRKSRC}/comm/.hg/patches/series
+	@${CP} -R ${WRKSRC}/comm/mail/branding/thunderbird/* \
+		${WRKSRC}/comm/mail/branding/${PORTNAME}/ || ${TRUE}
 	@${CP} ${WRKDIR}/thunderbird-patches-${DISTVERSION}${RELEASE_BB}/${RELEASE_M}/series-moz \
-		${WRKSRC}/.hg/patches/series-moz
-
-pre-patch:
+		${WRKDIR}/mozilla-patch-staging/series
+	@${CP} ${WRKDIR}/thunderbird-patches-${DISTVERSION}${RELEASE_BB}/${RELEASE_M}/series \
+		${WRKDIR}/comm-patch-staging/series
+	# 01-branding.patch only copies files to the betterbird directory in branding
+	# We took care of this as part of the extraction process, so the patch file is deleted
+	@${RM} ${WRKDIR}/comm-patch-staging/01-branding.patch
 	@for dir in branding bugs features misc; do \
-		for file in \
-		`${FIND} ${WRKDIR}/thunderbird-patches-${DISTVERSION}${RELEASE_BB}/${RELEASE_M}/$${dir}/ \
-		-type f -name *.patch -exec ${ECHO} {} ';' 2>/dev/null`; do \
-			${CP} $${file} ${WRKSRC}/comm/.hg/patches/ ; \
+		cd ${WRKDIR}/thunderbird-patches-${DISTVERSION}${RELEASE_BB}/${RELEASE_M} && \
+		for file in `find $${dir} -type f -name *.patch \
+		-printf '%f\n' -exec ${ECHO} {} ';' 2>/dev/null`; do \
+			if grep -q $${file} ${WRKDIR}/mozilla-patch-staging/series; then \
+				${CP} $${dir}/$${file} ${WRKDIR}/mozilla-patch-staging/ ; \
+			elif grep -q $${file} ${WRKDIR}/comm-patch-staging/series; then \
+				${CP} $${dir}/$${file} ${WRKDIR}/comm-patch-staging/ ; \
+			fi \
 		done; \
 	done
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/f0dedf9da0fb \
-		${WRKSRC}/.hg/patches/1976637-fix-scroll-moz.patch
+		${WRKDIR}/mozilla-patch-staging/1976637-fix-scroll-moz.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/eb32710132eb \
-		${WRKSRC}/comm/.hg/patches/1962868-phone-number-search.patch
+		${WRKDIR}/comm-patch-staging/1962868-phone-number-search.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/0e35d7cc243f \
-		${WRKSRC}/comm/.hg/patches/617287-fix-news-uris.patch
+		${WRKDIR}/comm-patch-staging/617287-fix-news-uris.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/38963a44b907 \
-		${WRKSRC}/comm/.hg/patches/1901338-fix-nntp-reconnect.patch
+		${WRKDIR}/comm-patch-staging/1901338-fix-nntp-reconnect.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/6da700026e3f \
-		${WRKSRC}/comm/.hg/patches/1947052-webp-photos-in-vcards.patch
+		${WRKDIR}/comm-patch-staging/1947052-webp-photos-in-vcards.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/44891cb19390 \
-		${WRKSRC}/comm/.hg/patches/1951824-exchange-autodiscover-user-field.patch
+		${WRKDIR}/comm-patch-staging/1951824-exchange-autodiscover-user-field.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/fbc1e6715b7c \
-		${WRKSRC}/comm/.hg/patches/1977051-account-name-crop.patch
+		${WRKDIR}/comm-patch-staging/1977051-account-name-crop.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/04c4af2ddadb \
-		${WRKSRC}/comm/.hg/patches/1968915-fix-JS-error-ROW-HEIGHTS.patch
+		${WRKDIR}/comm-patch-staging/1968915-fix-JS-error-ROW-HEIGHTS.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/2a4ae357f0c1 \
-		${WRKSRC}/comm/.hg/patches/1973658-fix-empty-language-field.patch
+		${WRKDIR}/comm-patch-staging/1973658-fix-empty-language-field.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/1cd9c4860ca1 \
-		${WRKSRC}/comm/.hg/patches/1979618-fix-nntp-auth.patch
+		${WRKDIR}/comm-patch-staging/1979618-fix-nntp-auth.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/b86ec7eb9e5d \
-		${WRKSRC}/comm/.hg/patches/1979567-contact-panel-selection-for-dragging.patch
+		${WRKDIR}/comm-patch-staging/1979567-contact-panel-selection-for-dragging.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/6f3d45ed82e5 \
-		${WRKSRC}/comm/.hg/patches/1983993-import-go-back.patch
+		${WRKDIR}/comm-patch-staging/1983993-import-go-back.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/61a9656dc5db \
-		${WRKSRC}/comm/.hg/patches/541744-nntp-not-retrieved-not-read.patch
+		${WRKDIR}/comm-patch-staging/541744-nntp-not-retrieved-not-read.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/e27a3bec48c2 \
-		${WRKSRC}/comm/.hg/patches/1984894-fix-mark-remaining-headers-read.patch
+		${WRKDIR}/comm-patch-staging/1984894-fix-mark-remaining-headers-read.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/26a4e96faec3 \
-		${WRKSRC}/comm/.hg/patches/1977321-selection-in-group-by-sort.patch
+		${WRKDIR}/comm-patch-staging/1977321-selection-in-group-by-sort.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/2c1f49de6b66 \
-		${WRKSRC}/comm/.hg/patches/1667865-hide-reply-button-in-ng.patch
+		${WRKDIR}/comm-patch-staging/1667865-hide-reply-button-in-ng.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/c12ca715def6 \
-		${WRKSRC}/comm/.hg/patches/1985033-try-again-button-error-page.patch
+		${WRKDIR}/comm-patch-staging/1985033-try-again-button-error-page.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/1b8b56fae407 \
-		${WRKSRC}/comm/.hg/patches/1982353-empty-rfc2047-qp-header.patch
+		${WRKDIR}/comm-patch-staging/1982353-empty-rfc2047-qp-header.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/fbfa5051d833 \
-		${WRKSRC}/comm/.hg/patches/617855-fix-sort-by-unread-threaded.patch
+		${WRKDIR}/comm-patch-staging/617855-fix-sort-by-unread-threaded.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/037434bf26d8 \
-		${WRKSRC}/comm/.hg/patches/1986289-dont-close-filter-dialog-on-enter.patch
+		${WRKDIR}/comm-patch-staging/1986289-dont-close-filter-dialog-on-enter.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/d97aeea36946 \
-		${WRKSRC}/comm/.hg/patches/1986558-no-reset-modification-count-on-id-change.patch
+		${WRKDIR}/comm-patch-staging/1986558-no-reset-modification-count-on-id-change.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/e79f24482f96 \
-		${WRKSRC}/comm/.hg/patches/1986428-fix-js-error-in-gloda.patch
+		${WRKDIR}/comm-patch-staging/1986428-fix-js-error-in-gloda.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/1cc168c9d0a5 \
-		${WRKSRC}/comm/.hg/patches/1987834-dont-remove-observer-no-moz-updater.patch
+		${WRKDIR}/comm-patch-staging/1987834-dont-remove-observer-no-moz-updater.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/b243b7f8dcd4 \
-		${WRKSRC}/comm/.hg/patches/1988230-csp-for-confirmPubkeyImport.patch
+		${WRKDIR}/comm-patch-staging/1988230-csp-for-confirmPubkeyImport.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/feb815f624ac \
-		${WRKSRC}/comm/.hg/patches/694780-disable-copy-news-filter.patch
+		${WRKDIR}/comm-patch-staging/694780-disable-copy-news-filter.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/45035b144f5a \
-		${WRKSRC}/comm/.hg/patches/1976327-check-email-address-not-ending-with-dot.patch
+		${WRKDIR}/comm-patch-staging/1976327-check-email-address-not-ending-with-dot.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/d540e9e7da97 \
-		${WRKSRC}/comm/.hg/patches/1972904-reminders-for-future-events-official.patch
+		${WRKDIR}/comm-patch-staging/1972904-reminders-for-future-events-official.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/da334651f4ea \
-		${WRKSRC}/comm/.hg/patches/1981322-fix-sender-avatar.patch
+		${WRKDIR}/comm-patch-staging/1981322-fix-sender-avatar.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/0530eb061f3e \
-		${WRKSRC}/comm/.hg/patches/1988607-fix-sorting-by-site-in-exceptions.patch
+		${WRKDIR}/comm-patch-staging/1988607-fix-sorting-by-site-in-exceptions.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/98f11bc525c4 \
-		${WRKSRC}/comm/.hg/patches/1988558-fix-cookie-manager-observer.patch
+		${WRKDIR}/comm-patch-staging/1988558-fix-cookie-manager-observer.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/05028ad04657 \
-		${WRKSRC}/comm/.hg/patches/1997914-auto-tag-context-menu.patch
+		${WRKDIR}/comm-patch-staging/1997914-auto-tag-context-menu.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/e8d3472f8f27 \
-		${WRKSRC}/comm/.hg/patches/1977204-ignore-focus-current-tab.patch
+		${WRKDIR}/comm-patch-staging/1977204-ignore-focus-current-tab.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/131ae901e5b7 \
-		${WRKSRC}/comm/.hg/patches/1991417-new-message-on-empty-pane-part1.patch
+		${WRKDIR}/comm-patch-staging/1991417-new-message-on-empty-pane-part1.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/28c7d645a197 \
-		${WRKSRC}/comm/.hg/patches/1991417-new-message-on-empty-pane-part2.patch
+		${WRKDIR}/comm-patch-staging/1991417-new-message-on-empty-pane-part2.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/66e495758c52 \
-		${WRKSRC}/comm/.hg/patches/1921406-more-than-one-vcard.patch
+		${WRKDIR}/comm-patch-staging/1921406-more-than-one-vcard.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/6478f8b14ab8 \
-		${WRKSRC}/comm/.hg/patches/1984376-fastmail-use-existing-pw.patch
+		${WRKDIR}/comm-patch-staging/1984376-fastmail-use-existing-pw.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/153d0746a240 \
-		${WRKSRC}/comm/.hg/patches/1995926-vcard-file-type.patch
+		${WRKDIR}/comm-patch-staging/1995926-vcard-file-type.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/7bcca65cbad1 \
-		${WRKSRC}/comm/.hg/patches/1842514-copy-within-server.patch
+		${WRKDIR}/comm-patch-staging/1842514-copy-within-server.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/a5b891bad9fb \
-		${WRKSRC}/comm/.hg/patches/1999101-missing-imap-delete-multiselect.patch
+		${WRKDIR}/comm-patch-staging/1999101-missing-imap-delete-multiselect.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/7223aacec7fa \
-		${WRKSRC}/comm/.hg/patches/523568-gloda-facet-hover.patch
+		${WRKDIR}/comm-patch-staging/523568-gloda-facet-hover.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/ecc2ac50c645 \
-		${WRKSRC}/comm/.hg/patches/1979880-reset-subfolder-sort-order.patch
+		${WRKDIR}/comm-patch-staging/1979880-reset-subfolder-sort-order.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/9db27c75073b \
-		${WRKSRC}/comm/.hg/patches/1992976-attachment-name-rfc2047.patch
+		${WRKDIR}/comm-patch-staging/1992976-attachment-name-rfc2047.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/0a02e98ad552 \
-		${WRKSRC}/comm/.hg/patches/1954372-fix-.getAttachmentFile-with-utf8.patch
+		${WRKDIR}/comm-patch-staging/1954372-fix-.getAttachmentFile-with-utf8.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/b5f8b712768d \
-		${WRKSRC}/comm/.hg/patches/2000109-update-folder-attr-no-type.patch
+		${WRKDIR}/comm-patch-staging/2000109-update-folder-attr-no-type.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/0f00c8246bfc \
-		${WRKSRC}/comm/.hg/patches/1978213-add-attach-filename.patch
+		${WRKDIR}/comm-patch-staging/1978213-add-attach-filename.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/3fe1f53a722d \
-		${WRKSRC}/comm/.hg/patches/1978213-add-attach-filename-take2.patch
+		${WRKDIR}/comm-patch-staging/1978213-add-attach-filename-take2.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/e2cf1d95ecfb \
-		${WRKSRC}/comm/.hg/patches/1968659-crypto-label-no-line-wrap.patch
+		${WRKDIR}/comm-patch-staging/1968659-crypto-label-no-line-wrap.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/91d7c38c051b \
-		${WRKSRC}/comm/.hg/patches/1898889-crypto-button-long-subject.patch
+		${WRKDIR}/comm-patch-staging/1898889-crypto-button-long-subject.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/78cb1e2e865c \
-		${WRKSRC}/comm/.hg/patches/2003145-clear-link-in-status.patch
+		${WRKDIR}/comm-patch-staging/2003145-clear-link-in-status.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/6d976af71db8 \
-		${WRKSRC}/comm/.hg/patches/1877646-saved-searches-unified-folders.patch
+		${WRKDIR}/comm-patch-staging/1877646-saved-searches-unified-folders.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/107dcb12b088 \
-		${WRKSRC}/comm/.hg/patches/2004103-calendar-displayed-input-title.patch
+		${WRKDIR}/comm-patch-staging/2004103-calendar-displayed-input-title.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/5a81c1541639 \
-		${WRKSRC}/comm/.hg/patches/1901089-date-picker-disable.patch
+		${WRKDIR}/comm-patch-staging/1901089-date-picker-disable.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/1c503c5aa0f6 \
-		${WRKSRC}/comm/.hg/patches/2005957-fix-regression-from-1901089.patch
+		${WRKDIR}/comm-patch-staging/2005957-fix-regression-from-1901089.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/b418552d0dab \
-		${WRKSRC}/comm/.hg/patches/341266-remove-read-folders-from-unread.patch
+		${WRKDIR}/comm-patch-staging/341266-remove-read-folders-from-unread.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/df1e574ed722 \
-		${WRKSRC}/comm/.hg/patches/729685-Windows-time-zone-name.patch
+		${WRKDIR}/comm-patch-staging/729685-Windows-time-zone-name.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/0345b619be9b \
-		${WRKSRC}/comm/.hg/patches/2008485-avoid-CalDAV-sync-jank.patch
+		${WRKDIR}/comm-patch-staging/2008485-avoid-CalDAV-sync-jank.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/b90bb9f675c5 \
-		${WRKSRC}/comm/.hg/patches/1996650-fix-crash-in-LocalRenameOrReparentFolder.patch
+		${WRKDIR}/comm-patch-staging/1996650-fix-crash-in-LocalRenameOrReparentFolder.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/375f48c3f909 \
-		${WRKSRC}/comm/.hg/patches/1742234-find-in-settings.patch
+		${WRKDIR}/comm-patch-staging/1742234-find-in-settings.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/44cb8d6c9809 \
-		${WRKSRC}/comm/.hg/patches/2007818-focus-body-after-cancel-reminder.patch
+		${WRKDIR}/comm-patch-staging/2007818-focus-body-after-cancel-reminder.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/26966e8f0a2f \
-		${WRKSRC}/comm/.hg/patches/2009143-fix-doubled-up-recipient-after-repair-encoding.patch
+		${WRKDIR}/comm-patch-staging/2009143-fix-doubled-up-recipient-after-repair-encoding.patch
 	@${CP} ${DISTDIR}/${DIST_SUBDIR}/db39e0bdfcee \
-		${WRKSRC}/comm/.hg/patches/2010970-typo-access-key-part2.patch
+		${WRKDIR}/comm-patch-staging/2010970-typo-access-key-part2.patch
