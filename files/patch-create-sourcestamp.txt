@@ -1,3 +1,7 @@
+Author: dianeasaur <4983626+dianeasaur@users.noreply.github.com>
+
+  Used for FreeBSD port build
+
 --- sourcestamp.txt
 +++ sourcestamp.txt
 @@ -0,0 +1,3 @@

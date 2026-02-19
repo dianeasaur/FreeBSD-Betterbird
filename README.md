@@ -1,5 +1,19 @@
+# Betterbird port for FreeBSD
+
 ## hello
 
-This is a work-in-progress repository containing my port of Betterbird 
+---
 
-Currently testing on amd64 and aarch64 with LLVM 21, Electron 40, and NodeJS 24
+This repository contains my work-in-progress port of Betterbird for FreeBSD. 
+
+Clone this repository with git command and build/install:
+
+``` shell
+git clone https://github.com/dianeasaur/FreeBSD-Betterbird.git
+cd FreeBSD-Betterbird
+make install clean
+```
+
+## Platform
+- Built on FreeBSD 15 amd64, LLVM 21, Rust 1.93 and Python 3.14
+- Testing on aarch64

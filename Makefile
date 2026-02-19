@@ -40,6 +40,7 @@ MOZ_OPTIONS+=	--with-branding=comm/mail/branding/betterbird
 MOZ_OPTIONS+=	--enable-official-branding
 MOZ_OPTIONS+=	--disable-updater
 MOZ_OPTIONS+=	--disable-crashreporter
+MOZ_OPTIONS-=	--enable-update-channel=release
 
 MOZ_MK_OPTIONS=	 MOZ_THUNDERBIRD=1 MAIL_PKG_SHARED=1 MOZ_TELEMETRY_REPORTING=
 MOZ_MK_OPTIONS+= MOZ_APP_REMOTINGNAME=eu.betterbird.Betterbird
