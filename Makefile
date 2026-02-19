@@ -37,14 +37,17 @@ MOZ_OPTIONS=	--enable-application=comm/mail
 MOZ_OPTIONS+=	--with-system-bz2 --with-system-jsonc
 MOZ_OPTIONS+=	--with-wasi-sysroot=${LOCALBASE}/share/wasi-sysroot
 MOZ_OPTIONS+=	--with-branding=comm/mail/branding/betterbird
+MOZ_OPTIONS+=	--with-app-name=${PORTNAME}
 MOZ_OPTIONS+=	--enable-official-branding
 MOZ_OPTIONS+=	--disable-updater
 MOZ_OPTIONS+=	--disable-crashreporter
 MOZ_OPTIONS-=	--enable-update-channel=release
 
-MOZ_MK_OPTIONS=	 MOZ_THUNDERBIRD=1 MAIL_PKG_SHARED=1 MOZ_TELEMETRY_REPORTING=
+MOZ_MK_OPTIONS=	 MOZ_APP_PROFILE="${PORTNAME}" MOZ_THUNDERBIRD=1
+MOZ_MK_OPTIONS+= MAIL_PKG_SHARED=1 MOZ_TELEMETRY_REPORTING=
 MOZ_MK_OPTIONS+= MOZ_APP_REMOTINGNAME=eu.betterbird.Betterbird
-MOZ_EXPORT=	 MOZ_THUNDERBIRD=1 MAIL_PKG_SHARED=1 MOZ_TELEMETRY_REPORTING=
+MOZ_EXPORT=	 MOZ_APP_PROFILE="${PORTNAME}" MOZ_THUNDERBIRD=1
+MOZ_EXPORT+=	 MAIL_PKG_SHARED=1 MOZ_TELEMETRY_REPORTING=
 MOZ_EXPORT+=	 MOZ_APP_REMOTINGNAME=eu.betterbird.Betterbird
 
 CONFLICTS_INSTALL+=	thunderbird
