@@ -1,0 +1,6 @@
+--- sourcestamp.txt
++++ sourcestamp.txt
+@@ -0,0 +1,3 @@
++20260218182336
++https://hg.mozilla.org/releases/comm-esr%%RELEASE_M%%/rev/%%COMM_REV%%
++https://hg.mozilla.org/releases/mozilla-esr%%RELEASE_M%%/rev/%%MOZILLA_REV%%
