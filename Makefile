@@ -11,6 +11,8 @@ WWW=		https://www.betterbird.eu/
 DIST_SUBDIR=	${PORTNAME}
 WRKSRC=		${WRKDIR}/${PORTNAME}
 
+PATCH_DEPENDS=	git>0:devel/git
+
 BUILD_DEPENDS=	nspr>=4.32:devel/nspr \
 	nss>=3.112:security/nss \
 	libevent>=2.1.8:devel/libevent \
@@ -32,6 +34,9 @@ LIB_DEPENDS=	libjson-c.so:devel/json-c
 
 USE_GECKO=	gecko
 USE_MOZILLA=	-icu -sqlite
+
+USES-=		nodejs:24
+USES+=		nodejs:25
 
 MOZ_OPTIONS=	--enable-application=comm/mail
 MOZ_OPTIONS+=	--with-system-bz2 --with-system-jsonc

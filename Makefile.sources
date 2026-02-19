@@ -19,6 +19,9 @@ GH_TUPLE+=	Betterbird:thunderbird-patches:${DISTVERSION}${RELEASE_BB}
 EXTRACT_SUFX=
 EXTRACT_ONLY= ${MOZILLA_REV}.zip ${COMM_REV}.zip thunderbird-patches.tar.xz
 
+# From https://github.com/Betterbird/thunderbird-patches/blob/140.7.1esr-bb18/140/series
+# + https://github.com/Betterbird/thunderbird-patches/blob/140.7.1esr-bb18/140/series-moz
+
 DISTFILES+=	eb32710132eb:ccpatch 0e35d7cc243f:ccpatch \
 	38963a44b907:ccpatch 6da700026e3f:ccpatch 44891cb19390:ccpatch \
 	fbc1e6715b7c:ccpatch 04c4af2ddadb:ccpatch 2a4ae357f0c1:ccpatch \
@@ -55,6 +58,8 @@ post-extract:
 		${WRKDIR}/mozilla-patch-staging/series
 	@${CP} ${WRKDIR}/thunderbird-patches-${DISTVERSION}${RELEASE_BB}/${RELEASE_M}/series \
 		${WRKDIR}/comm-patch-staging/series
+	# backout-temp-branding-hack.patch patch is not applicable
+	@${RM} ${WRKDIR}/comm-patch-staging/backout-temp-branding-hack.patch
 	# 01-branding.patch only copies files to the betterbird directory in branding
 	# We took care of this as part of the extraction process, so the patch file is deleted
 	@${RM} ${WRKDIR}/comm-patch-staging/01-branding.patch
