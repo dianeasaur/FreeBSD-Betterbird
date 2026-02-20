@@ -6,10 +6,13 @@ MAINTAINER=	4983626+dianeasaur@users.noreply.github.com
 COMMENT=	Betterbird is a fine-tuned version of Mozilla Thunderbird	
 WWW=		https://www.betterbird.eu/
 
+LICENSE=	MPL20
+LICENSE_FILE=	LICENSE
+
 .include "${.CURDIR}/Makefile.sources"
 
 DIST_SUBDIR=	${PORTNAME}
-WRKSRC=		${WRKDIR}/${PORTNAME}
+WRKSRC_SUBDIR=	${PORTNAME}
 
 PATCH_DEPENDS=	git>0:devel/git
 
@@ -35,35 +38,31 @@ LIB_DEPENDS=	libjson-c.so:devel/json-c
 USE_GECKO=	gecko
 USE_MOZILLA=	-icu -sqlite
 
-USES-=		nodejs:24
-USES+=		nodejs:25
-
 MOZ_OPTIONS=	--enable-application=comm/mail
 MOZ_OPTIONS+=	--with-system-bz2 --with-system-jsonc
 MOZ_OPTIONS+=	--with-wasi-sysroot=${LOCALBASE}/share/wasi-sysroot
 MOZ_OPTIONS+=	--with-branding=comm/mail/branding/betterbird
-MOZ_OPTIONS+=	--with-app-name=${PORTNAME}
 MOZ_OPTIONS+=	--enable-official-branding
 MOZ_OPTIONS+=	--disable-updater
 MOZ_OPTIONS+=	--disable-crashreporter
 MOZ_OPTIONS-=	--enable-update-channel=release
 
-MOZ_MK_OPTIONS=	 MOZ_APP_PROFILE="${PORTNAME}" MOZ_THUNDERBIRD=1
+MOZ_MK_OPTIONS=	 MOZ_THUNDERBIRD=1
 MOZ_MK_OPTIONS+= MAIL_PKG_SHARED=1 MOZ_TELEMETRY_REPORTING=
 MOZ_MK_OPTIONS+= MOZ_APP_REMOTINGNAME=eu.betterbird.Betterbird
-MOZ_EXPORT=	 MOZ_APP_PROFILE="${PORTNAME}" MOZ_THUNDERBIRD=1
+MOZ_EXPORT=	 MOZ_THUNDERBIRD=1
 MOZ_EXPORT+=	 MAIL_PKG_SHARED=1 MOZ_TELEMETRY_REPORTING=
 MOZ_EXPORT+=	 MOZ_APP_REMOTINGNAME=eu.betterbird.Betterbird
 
 CONFLICTS_INSTALL+=	thunderbird
 CONFLICTS_INSTALL+=	thunderbird-esr
 
-PORTNAME_ICON=  ${MOZILLA}.png
+PORTNAME_ICON=		${MOZILLA}.png
 PORTNAME_ICON_SRC=	${PREFIX}/lib/${MOZILLA}/chrome/icons/default/default48.png
 
 SYSTEM_PREFS=		${FAKEDIR}/lib/${PORTNAME}/defaults/pref/${PORTNAME}.js
 
-OPTIONS_DEFINE+=	CANBERRA DBUS DEBUG FFMPEG \
+OPTIONS_DEFINE+=	CANBERRA DBUS DEBUG EXPERIMENTAL FFMPEG \
 			LIBPROXY LTO OPTIMIZED_CFLAGS PROFILE TEST
 
 OPTIONS_DEFAULT+=	CANBERRA DBUS FFMPEG OPTIMIZED_CFLAGS PROFILE \
@@ -77,23 +76,39 @@ CANBERRA_DESC?=		Sound theme alerts
 LIBPROXY_DESC?=		Proxy support via libproxy
 LIGHTNING_DESC?=	Calendar extension
 
+.include <bsd.port.options.mk>
+
+.if ${PORT_OPTIONS:MEXPERIMENTAL}
+USES-= nodejs:24
+USES+= nodejs:25
+
+BUILD_DEPENDS+= node25>25.0:www/node25
+.else
+BUILD_DEPENDS+= node24>24.0:www/node24
+.endif
+
 pre-patch:
 	@${ECHO_MSG} "===>   Applying mozilla patches"
-	@for patch in `${AWK} '/^#/ {next} {print $$1}' ${WRKDIR}/mozilla-patch-staging/series`; do \
-		if [ -f ${WRKDIR}/mozilla-patch-staging/$${patch} ]; then \
-			cd ${WRKSRC} && git apply --quiet --whitespace=warn \
-				${WRKDIR}/mozilla-patch-staging/$${patch}; \
+	@for patch in `${AWK} '/^#/ {next} {print $$1}' ${WRKSRC}/${PORTNAME}-patches/series`; do \
+		if [ -f ${WRKSRC}/${PORTNAME}-patches/$${patch} ]; then \
+			cd ${WRKSRC} && git apply \
+			--whitespace=warn ${WRKSRC}/${PORTNAME}-patches/$${patch} || \
+			{ ${PATCH} -p1 -i ${WRKSRC}/${PORTNAME}-patches/$${patch} || \
+			${ECHO_MSG} "===>   ERROR: $${patch} failed to apply"; } ; \
 		else \
-			${ECHO_MSG} "===> ERROR: mozilla project patch $${patch} is missing"; \
+			${ECHO_MSG} "===>   ERROR: mozilla project patch $${patch} is missing"; \
 		fi; \
 	done
 	@${ECHO_MSG} "===>   Applying comm patches"
-	@for patch in `${AWK} '/^#/ {next} {print $$1}' ${WRKDIR}/comm-patch-staging/series`; do \
-		if [ -f ${WRKDIR}/comm-patch-staging/$${patch} ]; then \
-			cd ${WRKSRC} && git apply --quiet --whitespace=warn \
-				${WRKDIR}/comm-patch-staging/$${patch}; \
+	@for patch in `${AWK} '/^#/ {next} {print $$1}' ${WRKSRC}/comm/${PORTNAME}-patches/series`; do \
+		${ECHO_MSG} "===>   Applying $${patch}"; \
+		if [ -f ${WRKSRC}/comm/${PORTNAME}-patches/$${patch} ]; then \
+			cd ${WRKSRC}/comm && git apply \
+			--whitespace=warn ${WRKSRC}/comm/${PORTNAME}-patches/$${patch} || \
+			{ ${PATCH} -p1 -i ${WRKSRC}/${PORTNAME}-patches/$${patch} || \
+			${ECHO_MSG} "===>   ERROR: $${patch} failed to apply"; } ; \
 		else \
-			${ECHO_MSG} "===> ERROR: comm project patch $${patch} is missing"; \
+			${ECHO_MSG} "===>   ERROR: comm project patch $${patch} is missing"; \
 		fi; \
 	done
 

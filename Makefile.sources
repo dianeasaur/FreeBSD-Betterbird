@@ -45,154 +45,40 @@ DISTFILES+=	eb32710132eb:ccpatch 0e35d7cc243f:ccpatch \
 	db39e0bdfcee:ccpatch f0dedf9da0fb:mozpatch
 
 post-extract:
-	@${MKDIR} ${WRKDIR}/mozilla-patch-staging
-	@${MKDIR} ${WRKDIR}/comm-patch-staging
 	@${MV} ${WRKDIR}/mozilla-esr${RELEASE_M}-${MOZILLA_REV} \
-		${WRKSRC} 2>/dev/null || ${TRUE}
+		${WRKSRC} 2>/dev/null
 	@${MV} ${WRKDIR}/comm-esr${RELEASE_M}-${COMM_REV} \
-		${WRKSRC}/comm 2>/dev/null || ${TRUE}
-	@${MKDIR} ${WRKSRC}/comm/mail/branding/${PORTNAME} || ${TRUE}
-	@${CP} -R ${WRKSRC}/comm/mail/branding/thunderbird/* \
-		${WRKSRC}/comm/mail/branding/${PORTNAME}/ || ${TRUE}
+		${WRKSRC}/comm 2>/dev/null
+	@${MKDIR} ${WRKSRC}/${PORTNAME}-patches ${WRKSRC}/comm/${PORTNAME}-patches || ${TRUE}
 	@${CP} ${WRKDIR}/thunderbird-patches-${DISTVERSION}${RELEASE_BB}/${RELEASE_M}/series-moz \
-		${WRKDIR}/mozilla-patch-staging/series
+		${WRKSRC}/${PORTNAME}-patches/series
 	@${CP} ${WRKDIR}/thunderbird-patches-${DISTVERSION}${RELEASE_BB}/${RELEASE_M}/series \
-		${WRKDIR}/comm-patch-staging/series
-	# backout-temp-branding-hack.patch patch is not applicable
-	@${RM} ${WRKDIR}/comm-patch-staging/backout-temp-branding-hack.patch
-	# 01-branding.patch only copies files to the betterbird directory in branding
-	# We took care of this as part of the extraction process, so the patch file is deleted
-	@${RM} ${WRKDIR}/comm-patch-staging/01-branding.patch
+		${WRKSRC}/comm/${PORTNAME}-patches/series
 	@for dir in branding bugs features misc; do \
 		cd ${WRKDIR}/thunderbird-patches-${DISTVERSION}${RELEASE_BB}/${RELEASE_M} && \
 		for file in `find $${dir} -type f -name *.patch \
 		-printf '%f\n' -exec ${ECHO} {} ';' 2>/dev/null`; do \
-			if grep -q $${file} ${WRKDIR}/mozilla-patch-staging/series; then \
-				${CP} $${dir}/$${file} ${WRKDIR}/mozilla-patch-staging/ ; \
-			elif grep -q $${file} ${WRKDIR}/comm-patch-staging/series; then \
-				${CP} $${dir}/$${file} ${WRKDIR}/comm-patch-staging/ ; \
+			if grep -q $${file} ${WRKSRC}/${PORTNAME}-patches/series; then \
+				${CP} $${dir}/$${file} ${WRKSRC}/${PORTNAME}-patches/ ; \
+			elif grep -q $${file} ${WRKSRC}/comm/${PORTNAME}-patches/series; then \
+				${CP} $${dir}/$${file} ${WRKSRC}/comm/${PORTNAME}-patches/ ; \
 			fi \
 		done; \
 	done
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/f0dedf9da0fb \
-		${WRKDIR}/mozilla-patch-staging/1976637-fix-scroll-moz.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/eb32710132eb \
-		${WRKDIR}/comm-patch-staging/1962868-phone-number-search.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/0e35d7cc243f \
-		${WRKDIR}/comm-patch-staging/617287-fix-news-uris.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/38963a44b907 \
-		${WRKDIR}/comm-patch-staging/1901338-fix-nntp-reconnect.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/6da700026e3f \
-		${WRKDIR}/comm-patch-staging/1947052-webp-photos-in-vcards.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/44891cb19390 \
-		${WRKDIR}/comm-patch-staging/1951824-exchange-autodiscover-user-field.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/fbc1e6715b7c \
-		${WRKDIR}/comm-patch-staging/1977051-account-name-crop.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/04c4af2ddadb \
-		${WRKDIR}/comm-patch-staging/1968915-fix-JS-error-ROW-HEIGHTS.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/2a4ae357f0c1 \
-		${WRKDIR}/comm-patch-staging/1973658-fix-empty-language-field.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/1cd9c4860ca1 \
-		${WRKDIR}/comm-patch-staging/1979618-fix-nntp-auth.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/b86ec7eb9e5d \
-		${WRKDIR}/comm-patch-staging/1979567-contact-panel-selection-for-dragging.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/6f3d45ed82e5 \
-		${WRKDIR}/comm-patch-staging/1983993-import-go-back.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/61a9656dc5db \
-		${WRKDIR}/comm-patch-staging/541744-nntp-not-retrieved-not-read.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/e27a3bec48c2 \
-		${WRKDIR}/comm-patch-staging/1984894-fix-mark-remaining-headers-read.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/26a4e96faec3 \
-		${WRKDIR}/comm-patch-staging/1977321-selection-in-group-by-sort.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/2c1f49de6b66 \
-		${WRKDIR}/comm-patch-staging/1667865-hide-reply-button-in-ng.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/c12ca715def6 \
-		${WRKDIR}/comm-patch-staging/1985033-try-again-button-error-page.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/1b8b56fae407 \
-		${WRKDIR}/comm-patch-staging/1982353-empty-rfc2047-qp-header.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/fbfa5051d833 \
-		${WRKDIR}/comm-patch-staging/617855-fix-sort-by-unread-threaded.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/037434bf26d8 \
-		${WRKDIR}/comm-patch-staging/1986289-dont-close-filter-dialog-on-enter.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/d97aeea36946 \
-		${WRKDIR}/comm-patch-staging/1986558-no-reset-modification-count-on-id-change.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/e79f24482f96 \
-		${WRKDIR}/comm-patch-staging/1986428-fix-js-error-in-gloda.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/1cc168c9d0a5 \
-		${WRKDIR}/comm-patch-staging/1987834-dont-remove-observer-no-moz-updater.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/b243b7f8dcd4 \
-		${WRKDIR}/comm-patch-staging/1988230-csp-for-confirmPubkeyImport.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/feb815f624ac \
-		${WRKDIR}/comm-patch-staging/694780-disable-copy-news-filter.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/45035b144f5a \
-		${WRKDIR}/comm-patch-staging/1976327-check-email-address-not-ending-with-dot.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/d540e9e7da97 \
-		${WRKDIR}/comm-patch-staging/1972904-reminders-for-future-events-official.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/da334651f4ea \
-		${WRKDIR}/comm-patch-staging/1981322-fix-sender-avatar.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/0530eb061f3e \
-		${WRKDIR}/comm-patch-staging/1988607-fix-sorting-by-site-in-exceptions.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/98f11bc525c4 \
-		${WRKDIR}/comm-patch-staging/1988558-fix-cookie-manager-observer.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/05028ad04657 \
-		${WRKDIR}/comm-patch-staging/1997914-auto-tag-context-menu.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/e8d3472f8f27 \
-		${WRKDIR}/comm-patch-staging/1977204-ignore-focus-current-tab.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/131ae901e5b7 \
-		${WRKDIR}/comm-patch-staging/1991417-new-message-on-empty-pane-part1.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/28c7d645a197 \
-		${WRKDIR}/comm-patch-staging/1991417-new-message-on-empty-pane-part2.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/66e495758c52 \
-		${WRKDIR}/comm-patch-staging/1921406-more-than-one-vcard.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/6478f8b14ab8 \
-		${WRKDIR}/comm-patch-staging/1984376-fastmail-use-existing-pw.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/153d0746a240 \
-		${WRKDIR}/comm-patch-staging/1995926-vcard-file-type.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/7bcca65cbad1 \
-		${WRKDIR}/comm-patch-staging/1842514-copy-within-server.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/a5b891bad9fb \
-		${WRKDIR}/comm-patch-staging/1999101-missing-imap-delete-multiselect.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/7223aacec7fa \
-		${WRKDIR}/comm-patch-staging/523568-gloda-facet-hover.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/ecc2ac50c645 \
-		${WRKDIR}/comm-patch-staging/1979880-reset-subfolder-sort-order.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/9db27c75073b \
-		${WRKDIR}/comm-patch-staging/1992976-attachment-name-rfc2047.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/0a02e98ad552 \
-		${WRKDIR}/comm-patch-staging/1954372-fix-.getAttachmentFile-with-utf8.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/b5f8b712768d \
-		${WRKDIR}/comm-patch-staging/2000109-update-folder-attr-no-type.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/0f00c8246bfc \
-		${WRKDIR}/comm-patch-staging/1978213-add-attach-filename.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/3fe1f53a722d \
-		${WRKDIR}/comm-patch-staging/1978213-add-attach-filename-take2.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/e2cf1d95ecfb \
-		${WRKDIR}/comm-patch-staging/1968659-crypto-label-no-line-wrap.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/91d7c38c051b \
-		${WRKDIR}/comm-patch-staging/1898889-crypto-button-long-subject.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/78cb1e2e865c \
-		${WRKDIR}/comm-patch-staging/2003145-clear-link-in-status.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/6d976af71db8 \
-		${WRKDIR}/comm-patch-staging/1877646-saved-searches-unified-folders.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/107dcb12b088 \
-		${WRKDIR}/comm-patch-staging/2004103-calendar-displayed-input-title.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/5a81c1541639 \
-		${WRKDIR}/comm-patch-staging/1901089-date-picker-disable.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/1c503c5aa0f6 \
-		${WRKDIR}/comm-patch-staging/2005957-fix-regression-from-1901089.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/b418552d0dab \
-		${WRKDIR}/comm-patch-staging/341266-remove-read-folders-from-unread.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/df1e574ed722 \
-		${WRKDIR}/comm-patch-staging/729685-Windows-time-zone-name.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/0345b619be9b \
-		${WRKDIR}/comm-patch-staging/2008485-avoid-CalDAV-sync-jank.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/b90bb9f675c5 \
-		${WRKDIR}/comm-patch-staging/1996650-fix-crash-in-LocalRenameOrReparentFolder.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/375f48c3f909 \
-		${WRKDIR}/comm-patch-staging/1742234-find-in-settings.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/44cb8d6c9809 \
-		${WRKDIR}/comm-patch-staging/2007818-focus-body-after-cancel-reminder.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/26966e8f0a2f \
-		${WRKDIR}/comm-patch-staging/2009143-fix-doubled-up-recipient-after-repair-encoding.patch
-	@${CP} ${DISTDIR}/${DIST_SUBDIR}/db39e0bdfcee \
-		${WRKDIR}/comm-patch-staging/2010970-typo-access-key-part2.patch
+	# 01-branding.patch copies files, which we will do directly and remove the patch
+	@${MKDIR} ${WRKSRC}/comm/mail/branding/${PORTNAME} || ${TRUE}
+	@${CP} -R ${WRKSRC}/comm/mail/branding/thunderbird ${WRKSRC}/comm/mail/branding/${PORTNAME}
+	@${RM} ${WRKSRC}/comm/${PORTNAME}-patches/01-branding.patch
+	@${SED} -i '' '/01-branding.patch/d' ${WRKSRC}/comm/${PORTNAME}-patches/series
+	# backout-temp-branding-hack.patch is not applicable, so we'll delete it
+	@${RM} ${WRKSRC}/comm/${PORTNAME}-patches/backout-temp-branding-hack.patch
+	@${SED} -i '' '/backout-temp-branding-hack.patch/d' ${WRKSRC}/comm/${PORTNAME}-patches/series
+	# Copy the external patches referenced in series and provided by port distfiles
+	@${AWK} '/# https/ { FS=" |/"; $$0=$$0; print $$1, $$NF }' ${WRKSRC}/${PORTNAME}-patches/series | \
+		while read dest src; do \
+			${CP} ${DISTDIR}/${DIST_SUBDIR}/$$src ${WRKSRC}/${PORTNAME}-patches/$$dest; \
+		done
+	@${AWK} '/# https/ { FS=" |/"; $$0=$$0; print $$1, $$NF }' ${WRKSRC}/comm/${PORTNAME}-patches/series | \
+		while read dest src; do \
+			${CP} ${DISTDIR}/${DIST_SUBDIR}/$$src ${WRKSRC}/comm/${PORTNAME}-patches/$$dest; \
+		done
