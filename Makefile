@@ -42,15 +42,15 @@ MOZ_OPTIONS=	--enable-application=comm/mail
 MOZ_OPTIONS+=	--with-system-bz2 --with-system-jsonc
 MOZ_OPTIONS+=	--with-wasi-sysroot=${LOCALBASE}/share/wasi-sysroot
 MOZ_OPTIONS+=	--with-branding=comm/mail/branding/betterbird
-MOZ_OPTIONS+=	--enable-official-branding
+MOZ_OPTIONS+=	--disable-official-branding
 MOZ_OPTIONS+=	--disable-updater
 MOZ_OPTIONS+=	--disable-crashreporter
 MOZ_OPTIONS-=	--enable-update-channel=release
 
-MOZ_MK_OPTIONS=	 MOZ_THUNDERBIRD=1
+MOZ_MK_OPTIONS=	 MOZ_THUNDERBIRD=1 MOZ_BRANDING_DIRECTORY=betterbird
 MOZ_MK_OPTIONS+= MAIL_PKG_SHARED=1 MOZ_TELEMETRY_REPORTING=
 MOZ_MK_OPTIONS+= MOZ_APP_REMOTINGNAME=eu.betterbird.Betterbird
-MOZ_EXPORT=	 MOZ_THUNDERBIRD=1
+MOZ_EXPORT=	 MOZ_THUNDERBIRD=1 MOZ_BRANDING_DIRECTORY=betterbird
 MOZ_EXPORT+=	 MAIL_PKG_SHARED=1 MOZ_TELEMETRY_REPORTING=
 MOZ_EXPORT+=	 MOZ_APP_REMOTINGNAME=eu.betterbird.Betterbird
 
@@ -79,37 +79,31 @@ LIGHTNING_DESC?=	Calendar extension
 .include <bsd.port.options.mk>
 
 .if ${PORT_OPTIONS:MEXPERIMENTAL}
+CONFIGURE_ENV+=	DEVELOPER_MODE=yes DEVELOPER=1
 USES-= nodejs:24
 USES+= nodejs:25
-
 BUILD_DEPENDS+= node25>25.0:www/node25
 .else
 BUILD_DEPENDS+= node24>24.0:www/node24
 .endif
 
 pre-patch:
-	@${ECHO_MSG} "===>   Applying mozilla patches"
-	@for patch in `${AWK} '/^#/ {next} {print $$1}' ${WRKSRC}/${PORTNAME}-patches/series`; do \
-		if [ -f ${WRKSRC}/${PORTNAME}-patches/$${patch} ]; then \
-			cd ${WRKSRC} && git apply \
-			--whitespace=warn ${WRKSRC}/${PORTNAME}-patches/$${patch} || \
-			{ ${PATCH} -p1 -i ${WRKSRC}/${PORTNAME}-patches/$${patch} || \
-			${ECHO_MSG} "===>   ERROR: $${patch} failed to apply"; } ; \
+	@${ECHO_MSG} "===>   Applying ${PORTNAME} patches"
+	@for project in ${WRKSRC} ${WRKSRC}/comm; do \
+		for patch in `${AWK} '/^#/ {next} {print $$1}' $${project}/${PORTNAME}-patches/series`; do \
+		if [ -f $${project}/${PORTNAME}-patches/$${patch} ]; then \
+			cd $${project}; \
+			if ${PATCH} --dry-run -s -N -f -u -p1 -i ${PORTNAME}-patches/$${patch}; then \
+				${PATCH} -s -N -f -u -p1 -i ${PORTNAME}-patches/$${patch}; \
+			else \
+				${ECHO_MSG} "===>   Patch $${patch} failed, trying git" && \
+				git apply --whitespace=warn ${PORTNAME}-patches/$${patch} || \
+				${ECHO_MSG} "===>   Both patch and git apply failed for $${patch}"; \
+			fi; \
 		else \
-			${ECHO_MSG} "===>   ERROR: mozilla project patch $${patch} is missing"; \
+			${ECHO_MSG} "===>   ERROR: patch $${patch} is missing in $${project}"; \
 		fi; \
-	done
-	@${ECHO_MSG} "===>   Applying comm patches"
-	@for patch in `${AWK} '/^#/ {next} {print $$1}' ${WRKSRC}/comm/${PORTNAME}-patches/series`; do \
-		${ECHO_MSG} "===>   Applying $${patch}"; \
-		if [ -f ${WRKSRC}/comm/${PORTNAME}-patches/$${patch} ]; then \
-			cd ${WRKSRC}/comm && git apply \
-			--whitespace=warn ${WRKSRC}/comm/${PORTNAME}-patches/$${patch} || \
-			{ ${PATCH} -p1 -i ${WRKSRC}/${PORTNAME}-patches/$${patch} || \
-			${ECHO_MSG} "===>   ERROR: $${patch} failed to apply"; } ; \
-		else \
-			${ECHO_MSG} "===>   ERROR: comm project patch $${patch} is missing"; \
-		fi; \
+		done; \
 	done
 
 post-patch:

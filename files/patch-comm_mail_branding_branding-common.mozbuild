@@ -1,0 +1,12 @@
+Author: dianeasaur <4983626+dianeasaur@users.noreply.github.com>
+
+  Functionality moved from 01-branding.patch in the project
+
+--- comm/mail/branding/branding-common.mozbuild.orig	2026-02-20 02:49:09 UTC
++++ comm/mail/branding/branding-common.mozbuild
+@@ -31,5 +31,4 @@ def ThunderbirdBranding():
+             "default48.png",
+             "default64.png",
+             "newmail.svg",
+-            "TB-symbolic.svg",
+         ]
