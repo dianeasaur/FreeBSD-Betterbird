@@ -47,8 +47,6 @@ DISTFILES+=	eb32710132eb:ccpatch 0e35d7cc243f:ccpatch \
 post-extract:
 	@${MV} ${WRKDIR}/mozilla-esr${RELEASE_M}-${MOZILLA_REV} \
 		${WRKSRC} 2>/dev/null
-	# init a git repo in case of fallback patching operations
-	@git init -b ${PORTVERSION} ${WRKSRC}
 	@${MV} ${WRKDIR}/comm-esr${RELEASE_M}-${COMM_REV} \
 		${WRKSRC}/comm 2>/dev/null
 	@${MKDIR} ${WRKSRC}/${PORTNAME}-patches ${WRKSRC}/comm/${PORTNAME}-patches || ${TRUE}
@@ -75,6 +73,10 @@ post-extract:
 	# backout-temp-branding-hack.patch is not applicable, so we'll delete it
 	@${RM} ${WRKSRC}/comm/${PORTNAME}-patches/backout-temp-branding-hack.patch
 	@${SED} -i '' '/backout-temp-branding-hack.patch/d' ${WRKSRC}/comm/${PORTNAME}-patches/series
+	# similarly, 12+13-feature-linux-systray-incl-minimise.patch
+	@${RM} ${WRKSRC}/comm/${PORTNAME}-patches/12+13-feature-linux-systray-incl-minimise.patch
+	@${SED} -i '' '/12+13-feature-linux-systray-incl-minimise.patch/d' \
+		${WRKSRC}/comm/${PORTNAME}-patches/series
 	# 03b-branding.patch expects logo-gradient.svg not to exist, so we'll remove it
 	@${RM} ${WRKSRC}/comm/mail/branding/betterbird/content/logo-gradient.svg
 	# 10-branding.patch expects inAppNotificationData.json not to exist, so we'll remove it
