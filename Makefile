@@ -16,19 +16,11 @@ WRKSRC_SUBDIR=	${PORTNAME}
 
 PATCH_DEPENDS=	git>0:devel/git
 
-BUILD_DEPENDS=	nspr>=4.32:devel/nspr \
-	nss>=3.112:security/nss \
-	libevent>=2.1.8:devel/libevent \
-	harfbuzz>=10.1.0:print/harfbuzz \
-	graphite2>=1.3.14:graphics/graphite2 \
-	png>=1.6.45:graphics/png \
-	dav1d>=1.0.0:multimedia/dav1d \
-	libvpx>=1.15.0:multimedia/libvpx \
-	${PYTHON_PKGNAMEPREFIX}sqlite3>0:databases/py-sqlite3@${PY_FLAVOR} \
-	v4l_compat>0:multimedia/v4l_compat \
-	nasm:devel/nasm \
+BUILD_DEPENDS=	nasm:devel/nasm \
 	yasm:devel/yasm \
+	v4l_compat>0:multimedia/v4l_compat \
 	zip:archivers/zip \
+	${PYTHON_PKGNAMEPREFIX}sqlite3>0:databases/py-sqlite3@${PY_FLAVOR} \
 	${LOCALBASE}/share/wasi-sysroot/lib/wasm32-wasi/libc++abi.a:devel/wasi-libcxx${LLVM_VERSION} \
 	${LOCALBASE}/share/wasi-sysroot/lib/wasm32-wasi/libc.a:devel/wasi-libc@${LLVM_VERSION} \
 	wasi-compiler-rt${LLVM_VERSION}>0:devel/wasi-compiler-rt${LLVM_VERSION}
@@ -43,9 +35,8 @@ MOZ_OPTIONS+=	--with-system-bz2 --with-system-jsonc
 MOZ_OPTIONS+=	--with-wasi-sysroot=${LOCALBASE}/share/wasi-sysroot
 MOZ_OPTIONS+=	--with-branding=comm/mail/branding/betterbird
 MOZ_OPTIONS+=	--disable-official-branding
-MOZ_OPTIONS+=	--disable-updater
 MOZ_OPTIONS+=	--disable-crashreporter
-MOZ_OPTIONS-=	--enable-update-channel=release
+MOZ_OPTIONS+=	--disable-update-channel=release
 
 MOZ_MK_OPTIONS=	 MOZ_THUNDERBIRD=1 MOZ_BRANDING_DIRECTORY=betterbird
 MOZ_MK_OPTIONS+= MAIL_PKG_SHARED=1 MOZ_TELEMETRY_REPORTING=
@@ -73,10 +64,18 @@ OPTIONS_GROUP_AUDIO=	ALSA JACK PULSEAUDIO SNDIO
 
 AUDIO_DESC?=		Extra cubeb audio backends (OSS is always available)
 CANBERRA_DESC?=		Sound theme alerts
+DBUS_DESC?=		Enable DBUS support
 LIBPROXY_DESC?=		Proxy support via libproxy
 LIGHTNING_DESC?=	Calendar extension
 
 .include <bsd.port.options.mk>
+
+.if ${PORT_OPTIONS:MDBUS}
+CFLAGS+=	-I${LOCALBASE}/include/libdbusmenu-glib-0.4 \
+		-I${LOCALBASE}/include/libdbusmenu-gtk3-0.4
+LIB_DEPENDS+=	libdbusmenu-glib.so:devel/libdbusmenu
+MOZ_OPTIONS+=	--enable-dbus
+.endif
 
 .if ${PORT_OPTIONS:MEXPERIMENTAL}
 CONFIGURE_ENV+=	DEVELOPER_MODE=yes DEVELOPER=1
@@ -112,12 +111,15 @@ post-patch:
 	@${REINPLACE_CMD} -e 's|%%RELEASE_M%%|${RELEASE_M}|g' ${WRKSRC}/sourcestamp.txt
 	@${REINPLACE_CMD} -e 's|%%COMM_REV%%|${COMM_REV}|g' ${WRKSRC}/sourcestamp.txt
 	@${REINPLACE_CMD} -e 's|%%MOZILLA_REV%%|${MOZILLA_REV}|g' ${WRKSRC}/sourcestamp.txt
+	@${REINPLACE_CMD} -e 's|%%INSTALL_LIBDIR%%|${LOCALBASE}/lib/${PORTNAME}|g' \
+		${WRKSRC}/toolkit/mozapps/installer/packager.mk
+	@${REINPLACE_CMD} -e 's|%%PORTNAME%%|${PORTNAME}|g' ${WRKSRC}/toolkit/mozapps/installer/packager.mk
 
 port-pre-install:
 	${MKDIR} ${STAGEDIR}${PREFIX}/lib/${PORTNAME}/defaults
 
 post-install:
-	${INSTALL_DATA} ${WRKDIR}/${MOZILLA_EXEC_NAME}.desktop ${STAGEDIR}${PREFIX}/share/applications
+	${INSTALL_DATA} ${WRKDIR}/${PORTNAME}.desktop ${STAGEDIR}${PREFIX}/share/applications
 	${LN} -sf ${PORTNAME_ICON_SRC} ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME_ICON}
 
 .include <bsd.port.mk>

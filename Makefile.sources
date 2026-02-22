@@ -22,27 +22,27 @@ EXTRACT_ONLY= ${MOZILLA_REV}.zip ${COMM_REV}.zip thunderbird-patches.tar.xz
 # From https://github.com/Betterbird/thunderbird-patches/blob/140.7.1esr-bb18/140/series
 # + https://github.com/Betterbird/thunderbird-patches/blob/140.7.1esr-bb18/140/series-moz
 
-DISTFILES+=	eb32710132eb:ccpatch 0e35d7cc243f:ccpatch \
-	38963a44b907:ccpatch 6da700026e3f:ccpatch 44891cb19390:ccpatch \
-	fbc1e6715b7c:ccpatch 04c4af2ddadb:ccpatch 2a4ae357f0c1:ccpatch \
-	1cd9c4860ca1:ccpatch b86ec7eb9e5d:ccpatch 6f3d45ed82e5:ccpatch \
-	61a9656dc5db:ccpatch e27a3bec48c2:ccpatch 26a4e96faec3:ccpatch \
-	2c1f49de6b66:ccpatch c12ca715def6:ccpatch 1b8b56fae407:ccpatch \
-	fbfa5051d833:ccpatch 037434bf26d8:ccpatch d97aeea36946:ccpatch \
-	e79f24482f96:ccpatch 1cc168c9d0a5:ccpatch b243b7f8dcd4:ccpatch \
-	feb815f624ac:ccpatch 45035b144f5a:ccpatch d540e9e7da97:ccpatch \
-	da334651f4ea:ccpatch 0530eb061f3e:ccpatch 98f11bc525c4:ccpatch \
-	05028ad04657:ccpatch e8d3472f8f27:ccpatch 131ae901e5b7:ccpatch \
-	28c7d645a197:ccpatch 66e495758c52:ccpatch 6478f8b14ab8:ccpatch \
-	153d0746a240:ccpatch 7bcca65cbad1:ccpatch a5b891bad9fb:ccpatch \
-	7223aacec7fa:ccpatch ecc2ac50c645:ccpatch 9db27c75073b:ccpatch \
-	0a02e98ad552:ccpatch b5f8b712768d:ccpatch 0f00c8246bfc:ccpatch \
-	3fe1f53a722d:ccpatch e2cf1d95ecfb:ccpatch 91d7c38c051b:ccpatch \
-	78cb1e2e865c:ccpatch 5a81c1541639:ccpatch 6d976af71db8:ccpatch \
-	107dcb12b088:ccpatch 1c503c5aa0f6:ccpatch b418552d0dab:ccpatch \
-	df1e574ed722:ccpatch 0345b619be9b:ccpatch b90bb9f675c5:ccpatch \
-	375f48c3f909:ccpatch 44cb8d6c9809:ccpatch 26966e8f0a2f:ccpatch \
-	db39e0bdfcee:ccpatch f0dedf9da0fb:mozpatch
+DISTFILES+=	f0dedf9da0fb:mozpatch \
+	eb32710132eb:ccpatch 0e35d7cc243f:ccpatch 38963a44b907:ccpatch \
+	6da700026e3f:ccpatch 44891cb19390:ccpatch fbc1e6715b7c:ccpatch \
+	04c4af2ddadb:ccpatch 2a4ae357f0c1:ccpatch 1cd9c4860ca1:ccpatch \
+	b86ec7eb9e5d:ccpatch 6f3d45ed82e5:ccpatch 61a9656dc5db:ccpatch \
+	e27a3bec48c2:ccpatch 26a4e96faec3:ccpatch 2c1f49de6b66:ccpatch \
+	c12ca715def6:ccpatch 1b8b56fae407:ccpatch fbfa5051d833:ccpatch \
+	037434bf26d8:ccpatch d97aeea36946:ccpatch e79f24482f96:ccpatch \
+	1cc168c9d0a5:ccpatch b243b7f8dcd4:ccpatch feb815f624ac:ccpatch \
+	45035b144f5a:ccpatch d540e9e7da97:ccpatch da334651f4ea:ccpatch \
+	0530eb061f3e:ccpatch 98f11bc525c4:ccpatch 05028ad04657:ccpatch \
+	e8d3472f8f27:ccpatch 131ae901e5b7:ccpatch 28c7d645a197:ccpatch \
+	66e495758c52:ccpatch 6478f8b14ab8:ccpatch 153d0746a240:ccpatch \
+	7bcca65cbad1:ccpatch a5b891bad9fb:ccpatch 7223aacec7fa:ccpatch \
+	ecc2ac50c645:ccpatch 9db27c75073b:ccpatch 0a02e98ad552:ccpatch \
+	b5f8b712768d:ccpatch 0f00c8246bfc:ccpatch 3fe1f53a722d:ccpatch \
+	e2cf1d95ecfb:ccpatch 91d7c38c051b:ccpatch 78cb1e2e865c:ccpatch \
+	6d976af71db8:ccpatch 107dcb12b088:ccpatch 5a81c1541639:ccpatch \
+	1c503c5aa0f6:ccpatch b418552d0dab:ccpatch df1e574ed722:ccpatch \
+	0345b619be9b:ccpatch b90bb9f675c5:ccpatch 375f48c3f909:ccpatch \
+	44cb8d6c9809:ccpatch 26966e8f0a2f:ccpatch db39e0bdfcee:ccpatch \
 
 post-extract:
 	@${MV} ${WRKDIR}/mozilla-esr${RELEASE_M}-${MOZILLA_REV} \
