@@ -1,6 +1,6 @@
 [Desktop Entry]
 Encoding=UTF-8
-Name=Thunderbird
+Name=@APPNAME@
 GenericName=Mail Client
 Comment=Mail client and News Reader
 Exec=@MOZILLA@ %u
