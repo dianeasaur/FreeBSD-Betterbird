@@ -45,6 +45,8 @@ DISTFILES+=	f0dedf9da0fb:mozpatch \
 	44cb8d6c9809:ccpatch 26966e8f0a2f:ccpatch db39e0bdfcee:ccpatch \
 
 post-extract:
+	@${SED} -e 's|@PORTNAME_ICON@|${PORTNAME_ICON:R}|;s|@MOZILLA@|${MOZILLA}|' \
+		<${FILESDIR}/thunderbird.desktop.in >${WRKDIR}/${MOZILLA_EXEC_NAME}.desktop
 	@${MV} ${WRKDIR}/mozilla-esr${RELEASE_M}-${MOZILLA_REV} \
 		${WRKSRC} 2>/dev/null
 	@${MV} ${WRKDIR}/comm-esr${RELEASE_M}-${COMM_REV} \
