@@ -1,5 +1,6 @@
 PORTNAME=	betterbird	
-DISTVERSION=	140.7.1
+PORTVERSION=	140.7.1
+PORTREVISION=	2
 
 CATEGORIES=	mail news net-im wayland
 MAINTAINER=	4983626+dianeasaur@users.noreply.github.com

@@ -1,4 +1,4 @@
-RELEASE_M=	${DISTVERSION:C/\..*//}
+RELEASE_M=	${PORTVERSION:C/\..*//}
 RELEASE_BB=	esr-bb18
 MOZILLA_REV=	82e96a128bf5e3e7dd6e5180c9528f623ba5e0f7
 COMM_REV=	65bbf2befd029eb1ffc67331bb65a31861ea61b5
@@ -11,13 +11,13 @@ MASTER_SITES=	GH \
 
 DISTFILES=	${MOZILLA_REV}.zip:mozilla \
 		${COMM_REV}.zip:comm \
-		thunderbird-patches.tar.xz
+		thunderbird-patches-${PORTVERSION}.tar.xz
 
 USE_GITHUB=	yes
-GH_TUPLE+=	Betterbird:thunderbird-patches:${DISTVERSION}${RELEASE_BB}
+GH_TUPLE+=	Betterbird:thunderbird-patches:${PORTVERSION}${RELEASE_BB}
 
 EXTRACT_SUFX=
-EXTRACT_ONLY= ${MOZILLA_REV}.zip ${COMM_REV}.zip thunderbird-patches.tar.xz
+EXTRACT_ONLY= ${MOZILLA_REV}.zip ${COMM_REV}.zip thunderbird-patches-${PORTVERSION}.tar.xz
 
 # From https://github.com/Betterbird/thunderbird-patches/blob/140.7.1esr-bb18/140/series
 # + https://github.com/Betterbird/thunderbird-patches/blob/140.7.1esr-bb18/140/series-moz
@@ -45,19 +45,20 @@ DISTFILES+=	f0dedf9da0fb:mozpatch \
 	44cb8d6c9809:ccpatch 26966e8f0a2f:ccpatch db39e0bdfcee:ccpatch \
 
 post-extract:
-	@${SED} -e 's|@PORTNAME_ICON@|${PORTNAME_ICON:R}|;s|@MOZILLA@|${MOZILLA}|' \
+	@${SED} -e 's|@PORTNAME_ICON@|${PORTNAME_ICON:R}|; \
+		s|@MOZILLA@|${MOZILLA}|;s|@APPNAME@|${PORTNAME}|' \
 		<${FILESDIR}/thunderbird.desktop.in >${WRKDIR}/${MOZILLA_EXEC_NAME}.desktop
 	@${MV} ${WRKDIR}/mozilla-esr${RELEASE_M}-${MOZILLA_REV} \
 		${WRKSRC} 2>/dev/null
 	@${MV} ${WRKDIR}/comm-esr${RELEASE_M}-${COMM_REV} \
 		${WRKSRC}/comm 2>/dev/null
 	@${MKDIR} ${WRKSRC}/${PORTNAME}-patches ${WRKSRC}/comm/${PORTNAME}-patches || ${TRUE}
-	@${CP} ${WRKDIR}/thunderbird-patches-${DISTVERSION}${RELEASE_BB}/${RELEASE_M}/series-moz \
+	@${CP} ${WRKDIR}/thunderbird-patches-${PORTVERSION}${RELEASE_BB}/${RELEASE_M}/series-moz \
 		${WRKSRC}/${PORTNAME}-patches/series
-	@${CP} ${WRKDIR}/thunderbird-patches-${DISTVERSION}${RELEASE_BB}/${RELEASE_M}/series \
+	@${CP} ${WRKDIR}/thunderbird-patches-${PORTVERSION}${RELEASE_BB}/${RELEASE_M}/series \
 		${WRKSRC}/comm/${PORTNAME}-patches/series
 	@for dir in branding bugs features misc; do \
-		cd ${WRKDIR}/thunderbird-patches-${DISTVERSION}${RELEASE_BB}/${RELEASE_M} && \
+		cd ${WRKDIR}/thunderbird-patches-${PORTVERSION}${RELEASE_BB}/${RELEASE_M} && \
 		for file in `find $${dir} -type f -name *.patch \
 		-printf '%f\n' -exec ${ECHO} {} ';' 2>/dev/null`; do \
 			if grep -q $${file} ${WRKSRC}/${PORTNAME}-patches/series; then \
