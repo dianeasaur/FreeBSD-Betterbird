@@ -1,10 +1,8 @@
-TIMESTAMP = 1771838171
-SHA256 (betterbird/b23aff4bbac16e44f2a9d3127c18616acfef6166.zip) = 569c93ef94f68a8d79788609b8bb8bed30e0f94193263ed6e15bf64bddc328d4
-SIZE (betterbird/b23aff4bbac16e44f2a9d3127c18616acfef6166.zip) = 1183026027
-SHA256 (betterbird/aa377fbf351e6b10b053e6afa421755c82d5fcf7.zip) = d5282e7d916c39d256f08ac6c91d19e0e91c40da107c2215e5c1859c226b964d
-SIZE (betterbird/aa377fbf351e6b10b053e6afa421755c82d5fcf7.zip) = 176308810
-SHA256 (betterbird/thunderbird-patches-140.8.0.tar.xz) = ff6e121bd7a9058a2fbd0ffc147a4118ec522b8cdcc200dd8d9f7d8c6746a9fc
-SIZE (betterbird/thunderbird-patches-140.8.0.tar.xz) = 10997013
+TIMESTAMP = 1773876071
+SHA256 (betterbird/b23aff4bbac16e44f2a9d3127c18616acfef6166.zip) = b17196bec19ae67fa4303d8e6589f58cccbbfc0fcfa59e3c5dbd3849d8202a6d
+SIZE (betterbird/b23aff4bbac16e44f2a9d3127c18616acfef6166.zip) = 1183026038
+SHA256 (betterbird/aa377fbf351e6b10b053e6afa421755c82d5fcf7.zip) = d148c6498f71f7884de990f25cc31c4b272ef56a61dfceb8e57af259c76696dc
+SIZE (betterbird/aa377fbf351e6b10b053e6afa421755c82d5fcf7.zip) = 176308819
 SHA256 (betterbird/f0dedf9da0fb) = 192a09aac1bf201aa2fd4aafe5343154b87a76c9b6d7f7b102cbd8faa6b0839e
 SIZE (betterbird/f0dedf9da0fb) = 6443
 SHA256 (betterbird/ff902d2953c8) = 3713f05dbd7312c8172a47c4987bcd478915181b0831c103d08e5c026697b402

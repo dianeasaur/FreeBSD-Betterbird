@@ -10,14 +10,15 @@ MASTER_SITES=	GH \
 		https://hg-edge.mozilla.org/releases/comm-esr${RELEASE_M}/archive/:comm \
 
 DISTFILES=	${MOZILLA_REV}.zip:mozilla \
-		${COMM_REV}.zip:comm \
-		thunderbird-patches-${PORTVERSION}.tar.xz
+		${COMM_REV}.zip:comm # \
+		#thunderbird-patches-${PORTVERSION}.tar.xz
 
 USE_GITHUB=	yes
 GH_TUPLE+=	Betterbird:thunderbird-patches:${PORTVERSION}${RELEASE_BB}
 
 EXTRACT_SUFX=
-EXTRACT_ONLY= ${MOZILLA_REV}.zip ${COMM_REV}.zip thunderbird-patches-${PORTVERSION}.tar.xz
+EXTRACT_ONLY= 	${MOZILLA_REV}.zip ${COMM_REV}.zip \
+		${GH_ACCOUNT}-${GH_PROJECT}-${PORTVERSION}-${GH_TAGNAME}_GH0.tar.gz
 
 # From https://github.com/Betterbird/thunderbird-patches/blob/140.8.0esr-bb19/140/series
 # + https://github.com/Betterbird/thunderbird-patches/blob/140.8.0esr-bb19/140/series-moz
